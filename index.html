@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>Random Walker</title>
+    <meta charset="utf-8">
+    <style>
+      canvas {
+        border: 1px solid;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Random Walker</h1>
+    <canvas></canvas>
+
+    <script>
+      "use strict";
+
+      var renderer = {
+        _STEP_SIZE: 25,
+        init: function() {
+          this._canvas = document.getElementsByTagName("canvas")[0];
+          this._ctx = this._canvas.getContext("2d");
+          this._ctx.strokeStyle = "blue";
+          this._ctx.lineWidth = 2;
+          this._currentX = this._currentY = null;
+        },
+        startPath: function() {
+          this._currentX = Math.floor(this._canvas.width / 2);
+          this._currentY = Math.floor(this._canvas.height / 2);
+
+
+          this._ctx.beginPath();
+          this._ctx.moveTo(this._currentX, this._currentY);
+        },
+        walk: function(dx, dy) {
+          dx *= this._STEP_SIZE;
+          dy *= this._STEP_SIZE;
+
+          this._currentX += dx;
+          this._currentY += dy;
+
+          this._ctx.lineTo(this._currentX, this._currentY);
+          this._ctx.stroke();
+        }
+      };
+
+      renderer.init();
+      renderer.startPath();
+      renderer.walk(1, 1);
+    </script>
+  </body>
+</html>
