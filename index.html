@@ -33,7 +33,12 @@
           this._ctx.beginPath();
           this._ctx.moveTo(this._currentX, this._currentY);
         },
-        walk: function(dx, dy) {
+        _getStepLength: function(dx, dy) {
+          return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        },
+        drawStep: function(dx, dy) {
+          dx = dx / this._getStepLength(dx, dy);
+          dy = dy / this._getStepLength(dx, dy);
           dx *= this._STEP_SIZE;
           dy *= this._STEP_SIZE;
 
@@ -47,7 +52,8 @@
 
       renderer.init();
       renderer.startPath();
-      renderer.walk(1, 1);
+      renderer.drawStep(1, 1);
+      renderer.drawStep(1, 0);
     </script>
   </body>
 </html>
