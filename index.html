@@ -36,7 +36,10 @@
         _getStepLength: function(dx, dy) {
           return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
         },
-        drawStep: function(dx, dy) {
+        drawStep: function(step) {
+          var dx = step.x;
+          var dy = step.y;
+
           dx = dx / this._getStepLength(dx, dy);
           dy = dy / this._getStepLength(dx, dy);
           dx *= this._STEP_SIZE;
@@ -50,10 +53,23 @@
         }
       };
 
+      var walker = {
+        _generateRandomWholeNumberBetweenMinusOneAndOne: function() {
+          return Math.floor(Math.random() * 3 - 1);
+        },
+        getStep: function() {
+          return {
+            x: this._generateRandomWholeNumberBetweenMinusOneAndOne(),
+            y: this._generateRandomWholeNumberBetweenMinusOneAndOne()
+          };
+        }
+      };
+
       renderer.init();
       renderer.startPath();
-      renderer.drawStep(1, 1);
-      renderer.drawStep(1, 0);
+
+      renderer.drawStep(walker.getStep());
+      renderer.drawStep(walker.getStep());
     </script>
   </body>
 </html>
