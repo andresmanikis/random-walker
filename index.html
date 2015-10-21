@@ -3,6 +3,10 @@
     <title>Random Walker</title>
     <meta charset="utf-8">
     <style>
+      body {
+        text-align: center;
+      }
+
       canvas {
         border: 1px solid;
       }
@@ -11,7 +15,7 @@
 
   <body>
     <h1>Random Walker</h1>
-    <canvas></canvas>
+    <canvas width="800" height="500"></canvas>
 
     <script>
       "use strict";
@@ -45,6 +49,9 @@
           };
         },
         drawStep: function(step) {
+          // This is needed because otherwise NaN appears in scene and performs nasty stuff.
+          if (step.x === 0 && step.y === 0) return;
+
           var normalizedStep = this._getNormalizedStep(step);
           var dx = normalizedStep.x * this._SCALE_FACTOR;
           var dy = normalizedStep.y * this._SCALE_FACTOR;
@@ -86,17 +93,13 @@
 
       var step = walker.getStep();
 
-      var stepCount = 0;
       while (renderer.stillInside(step)) {
         renderer.drawStep(step);
         step = walker.getStep();
-        if (++stepCount > 100) break;
       }
 
-      // FIXME: Step normalization (try to draw a triange and see what happens).
+      // FIXME: Step normalization (try to draw a triangle and see what happens).
       // TODO: Make step able to normalize itself. Factory or constructor?
-      // FIXME: Why does it crashes when I don't put the break?
-      // FIXME: Why does it sometimes end without drawing any step?
     </script>
   </body>
 </html>
