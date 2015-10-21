@@ -17,13 +17,14 @@
       "use strict";
 
       var renderer = {
-        _STEP_SIZE: 25,
+        _SCALE_FACTOR: 25,
         init: function() {
           this._canvas = document.getElementsByTagName("canvas")[0];
           this._ctx = this._canvas.getContext("2d");
           this._ctx.strokeStyle = "blue";
           this._ctx.lineWidth = 2;
           this._currentX = this._currentY = null;
+          this.count = 0;
         },
         startPath: function() {
           this._currentX = Math.floor(this._canvas.width / 2);
@@ -36,20 +37,35 @@
         _getStepLength: function(dx, dy) {
           return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
         },
+        _getNormalizedStep: function(step) {
+          var stepLength = this._getStepLength(step.x, step.y);
+          return {
+            x: step.x / stepLength,
+            y: step.y / stepLength
+          };
+        },
         drawStep: function(step) {
-          var dx = step.x;
-          var dy = step.y;
-
-          dx = dx / this._getStepLength(dx, dy);
-          dy = dy / this._getStepLength(dx, dy);
-          dx *= this._STEP_SIZE;
-          dy *= this._STEP_SIZE;
+          var normalizedStep = this._getNormalizedStep(step);
+          var dx = normalizedStep.x * this._SCALE_FACTOR;
+          var dy = normalizedStep.y * this._SCALE_FACTOR;
 
           this._currentX += dx;
           this._currentY += dy;
 
           this._ctx.lineTo(this._currentX, this._currentY);
           this._ctx.stroke();
+        },
+        stillInside: function(step) {
+          var normalizedStep = this._getNormalizedStep(step);
+          var dx = normalizedStep.x * this._SCALE_FACTOR;
+          var dy = normalizedStep.y * this._SCALE_FACTOR;
+
+          if (this._currentX + dx > this._canvas.width) return false;
+          if (this._currentX + dx < 0) return false;
+          if (this._currentY + dy > this._canvas.height) return false;
+          if (this._currentY + dy < 0) return false;
+
+          return true;
         }
       };
 
@@ -68,8 +84,19 @@
       renderer.init();
       renderer.startPath();
 
-      renderer.drawStep(walker.getStep());
-      renderer.drawStep(walker.getStep());
+      var step = walker.getStep();
+
+      var stepCount = 0;
+      while (renderer.stillInside(step)) {
+        renderer.drawStep(step);
+        step = walker.getStep();
+        if (++stepCount > 100) break;
+      }
+
+      // FIXME: Step normalization (try to draw a triange and see what happens).
+      // TODO: Make step able to normalize itself. Factory or constructor?
+      // FIXME: Why does it crashes when I don't put the break?
+      // FIXME: Why does it sometimes end without drawing any step?
     </script>
   </body>
 </html>
